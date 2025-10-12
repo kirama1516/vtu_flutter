@@ -38,30 +38,35 @@ class RegisterScreen extends StatelessWidget {
                 icon: Icons.person_outline,
                 controller: firstNameController,
               ),
+
               const SizedBox(height: 10),
               CustomTextField(
                 hintText: "Surname",
                 icon: Icons.person_outline,
                 controller: surnameController,
               ),
+
               const SizedBox(height: 10),
               CustomTextField(
                 hintText: "Username",
                 icon: Icons.person_outline,
                 controller: usernameController,
               ),
+
               const SizedBox(height: 10),
               CustomTextField(
                 hintText: "Phone Number",
                 icon: Icons.phone,
                 controller: phoneController,
               ),
+
               const SizedBox(height: 10),
               CustomTextField(
                 hintText: "Email",
                 icon: Icons.email_outlined,
                 controller: emailController,
               ),
+
               const SizedBox(height: 10),
               CustomTextField(
                 hintText: "Password",
@@ -69,6 +74,7 @@ class RegisterScreen extends StatelessWidget {
                 obscureText: true,
                 controller: passwordController,
               ),
+              
               const SizedBox(height: 10),
               CustomTextField(
                 hintText: "Confirm Password",
@@ -100,6 +106,7 @@ class RegisterScreen extends StatelessWidget {
                   final response = await ApiService.registerUser(
                     name: "${firstNameController.text} ${surnameController.text}",
                     username: usernameController.text,
+                    phone: phoneController.text,
                     email: emailController.text,
                     password: passwordController.text,
                     confirmPassword: confirmPasswordController.text,

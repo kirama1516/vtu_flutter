@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:m5data_app/models/user.dart';
 import 'package:m5data_app/screens/auth/register_screen.dart';
+import 'package:m5data_app/screens/auth/set_pin_screen.dart';
 import 'package:m5data_app/widgets/custom_input.dart';
 import 'package:m5data_app/services/api_service.dart';
 import 'package:m5data_app/screens/dashboard_screen.dart';
@@ -32,8 +33,8 @@ class _LoginScreenState extends State<LoginScreen> {
     );
 
     final result = await ApiService.loginUser(
-      emailController.text,
-      passwordController.text,
+      email: emailController.text,
+      password: passwordController.text,
     );
 
     setState(() => isLoading = false);
@@ -48,11 +49,17 @@ class _LoginScreenState extends State<LoginScreen> {
         'token': token,
       });
 
-      // Navigate to dashboard
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => DashboardScreen(user: user)),
-      );
+     if (user.hasPin == 0) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => SetPinScreen(user: user)),
+        );
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => DashboardScreen(user: user)),
+        );
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(result['message'] ?? "Login failed")),
@@ -66,7 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
       backgroundColor: Colors.white,
       body: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 40),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 40),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
