@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:m5data_app/screens/buyData_screen.dart';
-import 'package:m5data_app/screens/home.dart';
 import 'package:m5data_app/screens/buyAirtime_screen.dart';
-import 'package:m5data_app/screens/dashboard_screen.dart';
-import 'package:m5data_app/models/user.dart';
 import 'package:m5data_app/screens/order_screen.dart';
 import 'package:m5data_app/screens/splash_screen.dart';
+import 'package:m5data_app/screens/transaction_screen.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget { 
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
@@ -20,10 +17,11 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'M5 DATA',
       theme: ThemeData(primarySwatch: Colors.indigo),
-     home: const SplashScreen(),
+      home: const SplashScreen(),
       routes: {
         '/buyAirtime': (context) => const BuyAirtimeScreen(),
-        '/orders': (context) => const OrderScreen(),
+        '/orders': (context) => const OrdersPage(),
+        '/transactions': (context) => const TransactionScreen()
       },
     );
   }

@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../services/api_service.dart';
 
-class OrdersPage extends StatefulWidget {
-  const OrdersPage({super.key});
+class TransactionScreen extends StatefulWidget {
+  const TransactionScreen({super.key});
 
   @override
-  State<OrdersPage> createState() => _OrdersPageState();
+  State<TransactionScreen> createState() => _TransactionScreenState();
 }
 
-class _OrdersPageState extends State<OrdersPage> {
-  List<dynamic> _orders = [];
+class _TransactionScreenState extends State<TransactionScreen> {
+  List<dynamic> _transactions = [];
   bool _isLoading = true;
   bool _isExporting = false;
 
@@ -21,14 +21,14 @@ class _OrdersPageState extends State<OrdersPage> {
   @override
   void initState() {
     super.initState();
-    fetchOrders();
+    fetchTransactions();
   }
 
-  Future<void> fetchOrders(
+  Future<void> fetchTransactions(
       {String? search, String? status, String? date}) async {
     setState(() => _isLoading = true);
 
-    final result = await ApiService.fetchFilteredOrders(
+    final result = await ApiService.fetchFilteredTransactions(
       search: search,
       status: status,
       date: date,
@@ -36,28 +36,28 @@ class _OrdersPageState extends State<OrdersPage> {
 
     setState(() {
       if (result['success']) {
-        _orders = result['orders'];
+        _transactions = result['transactions'];
       }
       _isLoading = false;
     });
   }
 
-  Future<void> exportAndShareOrders() async {
-    if (_orders.isEmpty) {
+  Future<void> exportAndShareTransactions() async {
+    if (_transactions.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No orders to export')),
+        const SnackBar(content: Text('No transactions to export')),
       );
       return;
     }
 
     setState(() => _isExporting = true);
 
-    final filePath = await ApiService.exportOrdersToCSV(_orders);
+    final filePath = await ApiService.exportTransactionsToCSV(_transactions);
     if (filePath != null) {
-      await ApiService.shareOrdersCSV(filePath);
+      await ApiService.shareTransactionsCSV(filePath);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to export orders')),
+        const SnackBar(content: Text('Failed to export transactions')),
       );
     }
 
@@ -68,7 +68,7 @@ class _OrdersPageState extends State<OrdersPage> {
     _searchController.clear();
     _selectedStatus = '';
     _selectedDate = '';
-    fetchOrders();
+    fetchTransactions();
   }
 
   Future<void> pickDate() async {
@@ -90,7 +90,7 @@ class _OrdersPageState extends State<OrdersPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Order History'),
+        title: const Text('Transaction History'),
         centerTitle: true,
         actions: [
           IconButton(
@@ -100,7 +100,7 @@ class _OrdersPageState extends State<OrdersPage> {
                     child: CircularProgressIndicator(color: Colors.white),
                   )
                 : const Icon(Icons.download),
-            onPressed: _isExporting ? null : exportAndShareOrders,
+            onPressed: _isExporting ? null : exportAndShareTransactions,
             tooltip: 'Export Orders',
           ),
         ],
@@ -170,7 +170,7 @@ class _OrdersPageState extends State<OrdersPage> {
                   flex: 2,
                   child: ElevatedButton.icon(
                     onPressed: () {
-                      fetchOrders(
+                      fetchTransactions(
                         search: _searchController.text.trim(),
                         status: _selectedStatus,
                         date: _selectedDate,
@@ -198,35 +198,35 @@ class _OrdersPageState extends State<OrdersPage> {
             Expanded(
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
-                  : _orders.isEmpty
-                      ? const Center(child: Text('No orders found'))
+                  : _transactions.isEmpty
+                      ? const Center(child: Text('No transactions found'))
                       : ListView.builder(
-                          itemCount: _orders.length,
+                          itemCount: _transactions.length,
                           itemBuilder: (context, index) {
-                            final order = _orders[index];
+                            final transaction = _transactions[index];
                             return Card(
                               margin: const EdgeInsets.symmetric(vertical: 6),
                               child: ListTile(
                                 title: Text(
-                                  '₦${order['total']} - ${order['beneficiary']}',
+                                  '₦${transaction['price']} - ₦${transaction['balanceBefore']} & ₦${transaction['balanceAfter']}',
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.indigo,
                                   ),
                                 ),
                                 subtitle: Text(
-                                  'Ref: ${order['reference']}\nStatus: ${order['status']}',
+                                  'Ref: ${transaction['reference']}\nStatus: ${transaction['status']}',
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
-                                  style: order['status'] == 'Completed'
+                                  style: transaction['status'] == 'Completed'
                                       ? const TextStyle(color: Colors.green)
-                                      : order['status'] == 'Pending'
+                                      : transaction['status'] == 'Pending'
                                           ? const TextStyle(
                                               color: Colors.orange)
                                           : const TextStyle(color: Colors.red),
                                 ),
                                 trailing: Text(
-                                  order['created_at'],
+                                  transaction['created_at'],
                                   style: const TextStyle(
                                       fontSize: 12, color: Colors.grey),
                                 ),

@@ -84,70 +84,70 @@ class _DashboardScreenState extends State<DashboardScreen> {
         elevation: 2,
         leading: Builder(
           builder: (context) => IconButton(
-        icon: const Icon(Icons.menu, color: Colors.black87),
-        onPressed: () => Scaffold.of(context).openDrawer(),
-        tooltip: "Open Menu",
+            icon: const Icon(Icons.menu, color: Colors.black87),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+            tooltip: "Open Menu",
           ),
         ),
         title: Text(
           user.username,
           style: const TextStyle(
-        color: Colors.black87,
-        fontWeight: FontWeight.w600,
+            color: Colors.black87,
+            fontWeight: FontWeight.w600,
           ),
         ),
         actions: [
           // Profile dropdown (simulated with PopupMenuButton)
           PopupMenuButton<int>(
-        icon: CircleAvatar(
-          radius: 20,
-          backgroundImage: AssetImage('assets/images/profileIcon.png'),
-        ),
-        itemBuilder: (context) => [
-          PopupMenuItem(
-            value: 0,
-            child: Row(
-          children: [
-            Icon(Icons.edit, color: Colors.indigo[900]),
-            SizedBox(width: 8),
-            Text("Edit Profile"),
-          ],
+            icon: const CircleAvatar(
+              radius: 20,
+              backgroundImage: AssetImage('assets/images/profileIcon.png'),
             ),
-          ),
-          PopupMenuItem(
-            value: 1,
-            child: Row(
-          children: [
-            Icon(Icons.settings, color: Colors.indigo[900]),
-            SizedBox(width: 8),
-            Text("Settings"),
-          ],
-            ),
-          ),
-          const PopupMenuDivider(),
-          PopupMenuItem(
-            value: 2,
-            child: Row(
-          children: const [
-            Icon(Icons.logout, color: Colors.red),
-            SizedBox(width: 8),
-            Text(
-              "Logout",
-              style: TextStyle(color: Colors.red),
-            ),
-          ],
-            ),
-          ),
-        ],
-        onSelected: (value) {
-          if (value == 0) {
-            Navigator.pushNamed(context, '/profile');
-          } else if (value == 1) {
-            Navigator.pushNamed(context, '/settings');
-          } else if (value == 2) {
-            logoutUser();
-          }
-        },
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: 0,
+                child: Row(
+                  children: [
+                    Icon(Icons.edit, color: Colors.indigo[900]),
+                    const SizedBox(width: 8),
+                    const Text("Edit Profile"),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: 1,
+                child: Row(
+                  children: [
+                    Icon(Icons.settings, color: Colors.indigo[900]),
+                    const SizedBox(width: 8),
+                    const Text("Settings"),
+                  ],
+                ),
+              ),
+              const PopupMenuDivider(),
+              const PopupMenuItem(
+                value: 2,
+                child: Row(
+                  children: [
+                    Icon(Icons.logout, color: Colors.red),
+                    SizedBox(width: 8),
+                    Text(
+                      "Logout",
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            onSelected: (value) {
+              if (value == 0) {
+                Navigator.pushNamed(context, '/profile');
+              } else if (value == 1) {
+                Navigator.pushNamed(context, '/settings');
+              } else if (value == 2) {
+                logoutUser();
+              }
+            },
           ),
           const SizedBox(width: 10),
         ],
@@ -159,93 +159,94 @@ class _DashboardScreenState extends State<DashboardScreen> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-        DrawerHeader(
-          decoration: BoxDecoration(color: Colors.indigo[900]),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-          CircleAvatar(
-            radius: 32,
-            backgroundImage: AssetImage('assets/images/profileIcon.png'),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-            Text(user.name,
-                style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 18)),
-            const SizedBox(height: 4),
-            Text(user.email,
-                style: const TextStyle(
-                color: Colors.white70, fontSize: 13)),
-              ],
+            DrawerHeader(
+              decoration: BoxDecoration(color: Colors.indigo[900]),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const CircleAvatar(
+                    radius: 32,
+                    backgroundImage:
+                        AssetImage('assets/images/profileIcon.png'),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(user.name,
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18)),
+                        const SizedBox(height: 4),
+                        Text(user.email,
+                            style: const TextStyle(
+                                color: Colors.white70, fontSize: 13)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-            ],
-          ),
-        ),
-        // Menu Section
-        const _DrawerSection(title: "Menu"),
-        _buildDrawerItem(Icons.dashboard, "Dashboard", () {
-          Navigator.pop(context);
-        }),
-        _buildDrawerItem(Icons.add_circle_outline, "Add Money", () {
-          Navigator.pushNamed(context, '/add-money');
-        }),
-        _buildDrawerItem(Icons.account_balance_wallet, "Wallet", () {
-          Navigator.pushNamed(context, '/wallet');
-        }),
-        const Divider(),
-        // Services Section
-        const _DrawerSection(title: "Services"),
-        _buildDrawerItem(Icons.phone_android, "Buy Airtime", () {
-          Navigator.pushNamed(context, '/buyAirtime');
-        }),
-        _buildDrawerItem(Icons.wifi, "Buy Data", () {
-          Navigator.pushNamed(context, '/buyData');
-        }),
-        _buildDrawerItem(Icons.message, "Bulk SMS", () {
-          Navigator.pushNamed(context, '/bulkSMS');
-        }),
-        _buildDrawerItem(Icons.tv, "Buy Cable", () {
-          Navigator.pushNamed(context, '/buyCable');
-        }),
-        _buildDrawerItem(Icons.electric_bolt, "Buy Electricity", () {
-          Navigator.pushNamed(context, '/buyElectricity');
-        }),
-        _buildDrawerItem(Icons.school, "Exams", () {
-          Navigator.pushNamed(context, '/buyExam');
-        }),
-        const Divider(),
-        // History Section
-        const _DrawerSection(title: "History"),
-        _buildDrawerItem(Icons.receipt_long, "Orders", () {
-          Navigator.pushNamed(context, '/orders');
-        }),
-        _buildDrawerItem(Icons.history, "Transactions", () {
-          Navigator.pushNamed(context, '/transactions');
-        }),
-        _buildDrawerItem(Icons.payment, "Payment", () {
-          Navigator.pushNamed(context, '/payment');
-        }),
-        const Divider(),
-        // Logout
-        ListTile(
-          leading: const Icon(Icons.logout, color: Colors.red),
-          title: const Text(
-            "Logout",
-            style: TextStyle(
-          color: Colors.red,
-          fontWeight: FontWeight.bold,
+            // Menu Section
+            const _DrawerSection(title: "Menu"),
+            _buildDrawerItem(Icons.dashboard, "Dashboard", () {
+              Navigator.pop(context);
+            }),
+            _buildDrawerItem(Icons.add_circle_outline, "Add Money", () {
+              Navigator.pushNamed(context, '/add-money');
+            }),
+            _buildDrawerItem(Icons.account_balance_wallet, "Wallet", () {
+              Navigator.pushNamed(context, '/wallet');
+            }),
+            const Divider(),
+            // Services Section
+            const _DrawerSection(title: "Services"),
+            _buildDrawerItem(Icons.phone_android, "Buy Airtime", () {
+              Navigator.pushNamed(context, '/buyAirtime');
+            }),
+            _buildDrawerItem(Icons.wifi, "Buy Data", () {
+              Navigator.pushNamed(context, '/buyData');
+            }),
+            _buildDrawerItem(Icons.message, "Bulk SMS", () {
+              Navigator.pushNamed(context, '/bulkSMS');
+            }),
+            _buildDrawerItem(Icons.tv, "Buy Cable", () {
+              Navigator.pushNamed(context, '/buyCable');
+            }),
+            _buildDrawerItem(Icons.electric_bolt, "Buy Electricity", () {
+              Navigator.pushNamed(context, '/buyElectricity');
+            }),
+            _buildDrawerItem(Icons.school, "Exams", () {
+              Navigator.pushNamed(context, '/buyExam');
+            }),
+            const Divider(),
+            // History Section
+            const _DrawerSection(title: "History"),
+            _buildDrawerItem(Icons.receipt_long, "Orders", () {
+              Navigator.pushNamed(context, '/orders');
+            }),
+            _buildDrawerItem(Icons.history, "Transactions", () {
+              Navigator.pushNamed(context, '/transactions');
+            }),
+            _buildDrawerItem(Icons.payment, "Payment", () {
+              Navigator.pushNamed(context, '/payment');
+            }),
+            const Divider(),
+            // Logout
+            ListTile(
+              leading: const Icon(Icons.logout, color: Colors.red),
+              title: const Text(
+                "Logout",
+                style: TextStyle(
+                  color: Colors.red,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              onTap: logoutUser,
             ),
-          ),
-          onTap: logoutUser,
-        ),
           ],
         ),
       ),
@@ -256,53 +257,54 @@ class _DashboardScreenState extends State<DashboardScreen> {
         child: ListView(
           children: [
             // Wallet Card
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // 🏦 Wallet Icon + Balance
-                Row(
-                  children: [
-                    // Wallet icon
-                    InkWell(
-                      onTap: () {
-                        // Navigate to wallet page
-                        Navigator.pushNamed(context, '/wallet');
-                      },
-                      child: Image.asset(
-                        'assets/images/walletIcon.png',
-                        width: 50,
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-
-                    // Wallet text + amount
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Wallet balance",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: Color.fromARGB(255, 2, 13, 76),
-                          ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // 🏦 Wallet Icon + Balance
+                  Row(
+                    children: [
+                      // Wallet icon
+                      InkWell(
+                        onTap: () {
+                          // Navigate to wallet page
+                          Navigator.pushNamed(context, '/wallet');
+                        },
+                        child: Image.asset(
+                          'assets/images/walletIcon.png',
+                          width: 50,
+                          fit: BoxFit.contain,
                         ),
-                        const SizedBox(height: 1),
-                        WalletBalance(token: widget.user.token ?? '')
-                      ],
-                    ),
-                  ],
-                ),
-              ],
+                      ),
+                      const SizedBox(width: 12),
+
+                      // Wallet text + amount
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Wallet balance",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Color.fromARGB(255, 2, 13, 76),
+                            ),
+                          ),
+                          const SizedBox(height: 1),
+                          WalletBalance(token: widget.user.token ?? '')
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
 
             // Add Money / History Buttons
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -357,151 +359,155 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
             const SizedBox(height: 20),
 
-          // 🏦 Account Details
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: (user.accName.isNotEmpty &&
-                user.accNumber.isNotEmpty &&
-                user.bankName.isNotEmpty)
-            ? Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Left: Account Number & Bank Name
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        user.accNumber,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.indigo[900],
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        user.bankName,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.indigo[900],
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  // Right: Copy Button & Account Name
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      IconButton(
-                        icon: Image.asset(
-                          'assets/images/copyIcon.png',
-                          width: 20,
-                        ),
-                        onPressed: () {
-                          Clipboard.setData(ClipboardData(text: user.accNumber));
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text("Account number copied!"),
-                              behavior: SnackBarBehavior.floating,
+            // 🏦 Account Details
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: (user.accName.isNotEmpty &&
+                      user.accNumber.isNotEmpty &&
+                      user.bankName.isNotEmpty)
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Left: Account Number & Bank Name
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              user.accNumber,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.indigo[900],
+                              ),
                             ),
+                            const SizedBox(height: 4),
+                            Text(
+                              user.bankName,
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.indigo[900],
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        // Right: Copy Button & Account Name
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            IconButton(
+                              icon: Image.asset(
+                                'assets/images/copyIcon.png',
+                                width: 20,
+                              ),
+                              onPressed: () {
+                                Clipboard.setData(
+                                    ClipboardData(text: user.accNumber));
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text("Account number copied!"),
+                                    behavior: SnackBarBehavior.floating,
+                                  ),
+                                );
+                              },
+                            ),
+                            Text(
+                              user.accName,
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.indigo[900],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    )
+                  : Center(
+                      child: TextButton.icon(
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/profile');
+                        },
+                        icon: const Icon(Icons.touch_app, color: Colors.indigo),
+                        label: const Text(
+                          "Click here to create virtual account",
+                          style: TextStyle(
+                            color: Colors.indigo,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ),
+            ),
+
+            // 🧩 Quick Services Section
+            const SizedBox(height: 10),
+
+            Material(
+              color: Colors.transparent,
+              child: Card(
+                color: Colors.grey[200], // Light ash background
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20)),
+                elevation: 2,
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: GridView.count(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: [
+                      _ServiceTile(
+                        imagePath: 'assets/images/airtimeIcon.png',
+                        label: "Airtime",
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const BuyAirtimeScreen()),
                           );
                         },
                       ),
-                      Text(
-                        user.accName,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.indigo[900],
-                        ),
+                      _ServiceTile(
+                        imagePath: 'assets/images/dataIcon.png',
+                        label: "Data",
+                        onTap: () => Navigator.pushNamed(context, '/buyData'),
+                      ),
+                      _ServiceTile(
+                        imagePath: 'assets/images/cableIcon.png',
+                        label: "Cable",
+                        onTap: () => Navigator.pushNamed(context, '/buyCable'),
+                      ),
+                      _ServiceTile(
+                        imagePath: 'assets/images/examIcon.png',
+                        label: "Exam",
+                        onTap: () => Navigator.pushNamed(context, '/buyExam'),
+                      ),
+                      _ServiceTile(
+                        imagePath: 'assets/images/electricityIcon.png',
+                        label: "Electricity",
+                        onTap: () =>
+                            Navigator.pushNamed(context, '/buyElectricity'),
+                      ),
+                      _ServiceTile(
+                        imagePath: 'assets/images/bulkIcon.png',
+                        label: "More",
+                        onTap: () => Navigator.pushNamed(context, '/bulkSMS'),
                       ),
                     ],
                   ),
-                ],
-              )
-            : Center(
-                child: TextButton.icon(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/profile');
-                  },
-                  icon: const Icon(Icons.touch_app, color: Colors.indigo),
-                  label: const Text(
-                    "Click here to create virtual account",
-                    style: TextStyle(
-                      color: Colors.indigo,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
                 ),
               ),
             ),
-
-          // 🧩 Quick Services Section
-          const SizedBox(height: 10),
-
-          Material(
-            color: Colors.transparent,
-            child: Card(
-              color: Colors.grey[200], // Light ash background
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-              elevation: 2,
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: GridView.count(
-                  crossAxisCount: 3,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  children: [
-                    _ServiceTile(
-                      imagePath: 'assets/images/airtimeIcon.png',
-                      label: "Airtime",
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const BuyAirtimeScreen()),
-                        );
-                      },
-                    ),
-                    _ServiceTile(
-                      imagePath: 'assets/images/dataIcon.png',
-                      label: "Data",
-                      onTap: () => Navigator.pushNamed(context, '/buyData'),
-                    ),
-                    _ServiceTile(
-                      imagePath: 'assets/images/cableIcon.png',
-                      label: "Cable",
-                      onTap: () => Navigator.pushNamed(context, '/buyCable'),
-                    ),
-                    _ServiceTile(
-                      imagePath: 'assets/images/examIcon.png',
-                      label: "Exam",
-                      onTap: () => Navigator.pushNamed(context, '/buyExam'),
-                    ),
-                    _ServiceTile(
-                      imagePath: 'assets/images/electricityIcon.png',
-                      label: "Electricity",
-                      onTap: () => Navigator.pushNamed(context, '/buyElectricity'),
-                    ),
-                    _ServiceTile(
-                      imagePath: 'assets/images/bulkIcon.png',
-                      label: "More",
-                      onTap: () => Navigator.pushNamed(context, '/bulkSMS'),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
             const SizedBox(height: 20),
           ],
         ),
@@ -515,91 +521,91 @@ class _DashboardScreenState extends State<DashboardScreen> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.07),
-          blurRadius: 8,
-          offset: const Offset(0, 2),
-        ),
+            BoxShadow(
+              color: Colors.black.withOpacity(0.07),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
           ],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-        // Home
-        InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: () {
-            // Already on dashboard, maybe scroll to top or refresh
-          },
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-          Image.asset(
-            'assets/images/homeIcon.png',
-            width: 25,
-          ),
-          const SizedBox(height: 2),
-          const Text(
-            "Home",
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.indigo,
-              fontWeight: FontWeight.w500,
+            // Home
+            InkWell(
+              borderRadius: BorderRadius.circular(16),
+              onTap: () {
+                // Already on dashboard, maybe scroll to top or refresh
+              },
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Image.asset(
+                    'assets/images/homeIcon.png',
+                    width: 25,
+                  ),
+                  const SizedBox(height: 2),
+                  const Text(
+                    "Home",
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.indigo,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-            ],
-          ),
-        ),
-        // Customer Care
-        InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: () {
-            Navigator.pushNamed(context, '/customerCare');
-          },
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-          Image.asset(
-            'assets/images/customerIcon.png',
-            width: 25,
-          ),
-          const SizedBox(height: 2),
-          const Text(
-            "Customer Care",
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.indigo,
-              fontWeight: FontWeight.w500,
+            // Customer Care
+            InkWell(
+              borderRadius: BorderRadius.circular(16),
+              onTap: () {
+                Navigator.pushNamed(context, '/customerCare');
+              },
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Image.asset(
+                    'assets/images/customerIcon.png',
+                    width: 25,
+                  ),
+                  const SizedBox(height: 2),
+                  const Text(
+                    "Customer Care",
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.indigo,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-            ],
-          ),
-        ),
-        // Account
-        InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: () {
-            Navigator.pushNamed(context, '/profile');
-          },
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-          Image.asset(
-            'assets/images/accountIcon.png',
-            width: 25,
-          ),
-          const SizedBox(height: 2),
-          const Text(
-            "Account",
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.indigo,
-              fontWeight: FontWeight.w500,
+            // Account
+            InkWell(
+              borderRadius: BorderRadius.circular(16),
+              onTap: () {
+                Navigator.pushNamed(context, '/profile');
+              },
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Image.asset(
+                    'assets/images/accountIcon.png',
+                    width: 25,
+                  ),
+                  const SizedBox(height: 2),
+                  const Text(
+                    "Account",
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.indigo,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-            ],
-          ),
-        ),
           ],
         ),
       ),
@@ -623,8 +629,7 @@ class _DrawerSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding:
-          const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Text(
         title,
         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),

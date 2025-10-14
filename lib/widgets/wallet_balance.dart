@@ -5,7 +5,7 @@ import 'package:m5data_app/services/api_service.dart';
 class WalletBalance extends StatefulWidget {
   final String token; // pass in user token
 
-  const WalletBalance({Key? key, required this.token}) : super(key: key);
+  const WalletBalance({super.key, required this.token});
 
   @override
   State<WalletBalance> createState() => _WalletBalanceState();

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:m5data_app/services/api_service.dart';
 
 class BuyAirtimeScreen extends StatefulWidget {
-  const BuyAirtimeScreen({Key? key}) : super(key: key);
+  const BuyAirtimeScreen({super.key});
 
   @override
   State<BuyAirtimeScreen> createState() => _BuyAirtimeScreenState();
@@ -15,6 +15,7 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen> {
   final TextEditingController pinController = TextEditingController();
 
   String? selectedNetwork;
+  String? selectedCategory;
   bool isLoading = false;
 
   final List<Map<String, dynamic>> networks = [
@@ -22,6 +23,11 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen> {
     {'id': 2, 'name': 'MTN', 'image': 'assets/images/mtn.jpeg'},
     {'id': 3, 'name': 'Glo', 'image': 'assets/images/glo.jpeg'},
     {'id': 4, 'name': '9mobile', 'image': 'assets/images/9mobile.jpeg'},
+  ];
+
+  final List<Map<String, dynamic>> categories = [
+    {'id': 1, 'name': 'VTU'},
+    {'id': 2, 'name': 'share&sell'},
   ];
 
   void buyAirtime() async {
@@ -33,6 +39,7 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen> {
       // print("➡️ Buying airtime...");
       final result = await ApiService().buyAirtime(
         billerId: selectedNetwork!,
+        categoryId: selectedCategory!,
         amount: double.parse(amountController.text),
         phone: phoneController.text,
         pin: pinController.text,
@@ -44,7 +51,8 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(result['message'] ?? 'Something went wrong'),
-          backgroundColor: result['success'] == true ? Colors.green : Colors.red,
+          backgroundColor:
+              result['success'] == true ? Colors.green : Colors.red,
         ),
       );
     } catch (e) {
@@ -58,7 +66,6 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen> {
       if (mounted) setState(() => isLoading = false);
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -87,10 +94,11 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen> {
                     physics: const NeverScrollableScrollPhysics(),
                     children: networks.map((network) {
                       return GestureDetector(
-                        onTap: () => setState(() => selectedNetwork = network['id'].toString()),
+                        onTap: () => setState(
+                            () => selectedNetwork = network['id'].toString()),
                         child: Card(
                           color: selectedNetwork == network['id'].toString()
-                              ? Colors.blue[100]
+                              ? Colors.indigo
                               : Colors.white,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12)),
@@ -104,6 +112,25 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
+
+                // 🔹 Category Dropdown
+                DropdownButtonFormField<String>(
+                  value: selectedCategory,
+                  decoration: const InputDecoration(
+                    labelText: 'Category',
+                    border: OutlineInputBorder(),
+                  ),
+                  items: categories.map((category) {
+                    return DropdownMenuItem<String>(
+                      value: category['id'].toString(),
+                      child: Text(category['name']),
+                    );
+                  }).toList(),
+                  onChanged: (value) =>
+                      setState(() => selectedCategory = value!),
+                ),
+
+                const SizedBox(height: 16),
 
                 TextFormField(
                   controller: phoneController,
@@ -124,8 +151,9 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen> {
                     labelText: "Amount",
                     border: OutlineInputBorder(),
                   ),
-                  validator: (v) =>
-                      v == null || double.tryParse(v) == null ? "Enter amount" : null,
+                  validator: (v) => v == null || double.tryParse(v) == null
+                      ? "Enter amount"
+                      : null,
                 ),
                 const SizedBox(height: 16),
 
@@ -151,7 +179,8 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen> {
                   ),
                   child: isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text("Buy Airtime", style: TextStyle(color: Color(0xFFFFFFFF))),
+                      : const Text("Buy Airtime",
+                          style: TextStyle(color: Color(0xFFFFFFFF))),
                 ),
               ],
             ),

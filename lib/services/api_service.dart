@@ -119,16 +119,22 @@ class ApiService {
       final data = jsonDecode(response.body);
 
       if (response.statusCode == 200 && data['status'] == true) {
-        return {'success': true, 'message': data['message'] ?? 'PIN set successfully'};
+        return {
+          'success': true,
+          'message': data['message'] ?? 'PIN set successfully'
+        };
       } else {
-        return {'success': false, 'message': data['message'] ?? 'Failed to set PIN'};
+        return {
+          'success': false,
+          'message': data['message'] ?? 'Failed to set PIN'
+        };
       }
     } catch (e) {
       return {'success': false, 'message': 'Error occurred: $e'};
     }
   }
 
-  static Future<Map<String, dynamic>> fetchWallet( String token) async {
+  static Future<Map<String, dynamic>> fetchWallet(String token) async {
     final url = Uri.parse('$baseUrl/wallet');
     final response = await http.get(
       url,
@@ -145,8 +151,9 @@ class ApiService {
     }
   }
 
- Future<Map<String, dynamic>> buyAirtime({
+  Future<Map<String, dynamic>> buyAirtime({
     required String billerId,
+    required String categoryId,
     required double amount,
     required String phone,
     required String pin,
@@ -170,8 +177,8 @@ class ApiService {
         },
         body: jsonEncode({
           'biller_id': billerId,
-          'category_id': 1, // Adjust to your actual category ID
-          'service_id': 1,  // Adjust to your actual service ID
+          'category_id': categoryId, // Adjust to your actual category ID
+          'service_id': 1, // Adjust to your actual service ID
           'price': amount,
           'beneficiary': phone,
           'pin': pin,
@@ -190,98 +197,257 @@ class ApiService {
     }
   }
 
-    // 🧾 Fetch user orders from API
-  Future<Map<String, dynamic>> fetchOrders() async {
+  static Future<Map<String, dynamic>> fetchOrders() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('token');
+
       if (token == null) {
         return {'success': false, 'message': 'User not logged in'};
       }
 
-      final url = Uri.parse('$baseUrl/orders'); // 👈 Replace with your actual endpoint
       final response = await http.get(
-        url,
+        Uri.parse('$baseUrl/orders'),
         headers: {
           'Authorization': 'Bearer $token',
           'Accept': 'application/json',
         },
       );
 
+      print('📦 Fetch Orders Response: ${response.body}');
+      final data = jsonDecode(response.body);
+
+      return data;
+    } catch (e) {
+      print('❌ Fetch Orders Error: $e');
+      return {'success': false, 'message': 'Failed to load orders'};
+    }
+  }
+
+  // 🧾 Fetch user orders from API
+  static Future<Map<String, dynamic>> fetchFilteredOrders({
+    String? search,
+    String? status,
+    String? date,
+    String? token,
+  }) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final authToken = token ?? prefs.getString('token');
+
+      if (authToken == null) {
+        return {'success': false, 'message': 'User not logged in'};
+      }
+
+      final queryParams = {
+        if (search != null && search.isNotEmpty) 'search': search,
+        if (status != null && status.isNotEmpty) 'status': status,
+        if (date != null && date.isNotEmpty) 'date': date,
+      };
+
+      final uri =
+          Uri.parse('$baseUrl/orders').replace(queryParameters: queryParams);
+      final response = await http.get(
+        uri,
+        headers: {
+          'Authorization': 'Bearer $authToken',
+          'Accept': 'application/json',
+        },
+      );
+
+      print('🔹 Filter Orders Response: ${response.body}');
+
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         return {'success': true, 'orders': data['orders'] ?? []};
       } else {
-        return {
-          'success': false,
-          'message': 'Failed to fetch orders: ${response.statusCode}'
-        };
+        return {'success': false, 'message': 'Failed to fetch filtered orders'};
       }
     } catch (e) {
-      return {'success': false, 'message': e.toString()};
+      return {'success': false, 'message': 'Error: $e'};
     }
   }
 
-  // 📥 Export orders to CSV file
-  Future<String?> exportOrdersToCSV(List<dynamic> orders) async {
-    if (orders.isEmpty) return null;
-
+  static Future<String?> exportOrdersToCSV(List<dynamic> orders) async {
     try {
-      List<List<dynamic>> csvData = [
+      List<List<dynamic>> rows = [
         [
-          "ID",
-          "User",
-          "Service",
-          "Biller",
-          "Reference",
-          "Price",
-          "Quantity",
-          "Total",
-          "Beneficiary",
-          "Status",
-          "Date"
-        ],
-        ...orders.map((order) => [
-              order['id'] ?? '',
-              order['username'] ?? '',
-              order['serviceName'] ?? '',
-              order['billerName'] ?? '',
-              order['reference'] ?? '',
-              order['price'] ?? '',
-              order['quantity'] ?? '',
-              order['total'] ?? '',
-              order['beneficiary'] ?? '',
-              order['status'] ?? '',
-              order['created_at'] ?? '',
-            ]),
+          'ID',
+          'Reference',
+          'Beneficiary',
+          'Price',
+          'Total',
+          'Status',
+          'Provider',
+          'Date'
+        ]
       ];
 
-      // Convert to CSV format
-      String csv = const ListToCsvConverter().convert(csvData);
+      for (var order in orders) {
+        rows.add([
+          order['id'],
+          order['reference'],
+          order['beneficiary'],
+          order['price'],
+          order['total'],
+          order['status'],
+          order['provider'],
+          order['created_at'],
+        ]);
+      }
 
-      // Save file to phone
-      final dir = await getExternalStorageDirectory();
-      final path = "${dir!.path}/orders_export.csv";
+      String csvData = const ListToCsvConverter().convert(rows);
+      final directory = await getApplicationDocumentsDirectory();
+      final path = '${directory.path}/orders_export.csv';
       final file = File(path);
-      await file.writeAsString(csv);
+      await file.writeAsString(csvData);
 
       return path;
     } catch (e) {
+      print('❌ CSV Export Error: $e');
       return null;
     }
   }
 
-  // 📤 Share the exported CSV
-  Future<void> shareOrdersCSV(String path) async {
+  static Future<void> shareOrdersCSV(String filePath) async {
     try {
-      final file = File(path);
-      if (await file.exists()) {
-        await Share.shareXFiles([XFile(path)],
-            text: 'Here is my order history CSV 📄');
-      }
+      await Share.shareXFiles(
+        [XFile(filePath)],
+        text: 'Here is my exported order history 📦',
+      );
     } catch (e) {
-      print("Error sharing CSV: $e");
+      print('❌ Share CSV Error: $e');
     }
   }
 
+  static Future<Map<String, dynamic>> fetchTransactions() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+
+      if (token == null) {
+        return {'success': false, 'message': 'User not logged in'};
+      }
+
+      final response = await http.get(
+        Uri.parse('$baseUrl/transactions'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
+        },
+      );
+
+      print('📦 Fetch Orders Response: ${response.body}');
+      final data = jsonDecode(response.body);
+
+      return data;
+    } catch (e) {
+      print('❌ Fetch Transactions Error: $e');
+      return {'success': false, 'message': 'Failed to load Transactions'};
+    }
+  }
+
+  // 🧾 Fetch user orders from API
+  static Future<Map<String, dynamic>> fetchFilteredTransactions({
+    String? search,
+    String? status,
+    String? date,
+    String? token,
+  }) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final authToken = token ?? prefs.getString('token');
+
+      if (authToken == null) {
+        return {'success': false, 'message': 'User not logged in'};
+      }
+
+      final queryParams = {
+        if (search != null && search.isNotEmpty) 'search': search,
+        if (status != null && status.isNotEmpty) 'status': status,
+        if (date != null && date.isNotEmpty) 'date': date,
+      };
+
+      final uri = Uri.parse('$baseUrl/transactions')
+          .replace(queryParameters: queryParams);
+      final response = await http.get(
+        uri,
+        headers: {
+          'Authorization': 'Bearer $authToken',
+          'Accept': 'application/json',
+        },
+      );
+
+      print('🔹 Filter Transactions Response: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return {'success': true, 'transactions': data['transactions'] ?? []};
+      } else {
+        return {
+          'success': false,
+          'message': 'Failed to fetch filtered transactions'
+        };
+      }
+    } catch (e) {
+      return {'success': false, 'message': 'Error: $e'};
+    }
+  }
+
+  static Future<String?> exportTransactionsToCSV(
+      List<dynamic> transactions) async {
+    try {
+      List<List<dynamic>> rows = [
+        [
+          'ID',
+          'wallet_id'
+              'order_id'
+              'reference'
+              'type'
+              'price'
+              'balanceBefore'
+              'balanceAfter'
+              'note'
+              'status'
+        ]
+      ];
+
+      for (var transaction in transactions) {
+        rows.add([
+          transaction['id'],
+          transaction['wallet_id'],
+          transaction['order_id'],
+          transaction['reference'],
+          transaction['type'],
+          transaction['price'],
+          transaction['balanceBefore'],
+          transaction['balanceAfter'],
+          transaction['note'],
+          transaction['status'],
+        ]);
+      }
+
+      String csvData = const ListToCsvConverter().convert(rows);
+      final directory = await getApplicationDocumentsDirectory();
+      final path = '${directory.path}/transactions_export.csv';
+      final file = File(path);
+      await file.writeAsString(csvData);
+
+      return path;
+    } catch (e) {
+      print('❌ CSV Export Error: $e');
+      return null;
+    }
+  }
+
+  static Future<void> shareTransactionsCSV(String filePath) async {
+    try {
+      await Share.shareXFiles(
+        [XFile(filePath)],
+        text: 'Here is my exported transactions history 📦',
+      );
+    } catch (e) {
+      print('❌ Share CSV Error: $e');
+    }
+  }
 }
