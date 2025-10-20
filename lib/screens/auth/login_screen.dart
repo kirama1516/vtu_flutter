@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:m5data_app/models/user.dart';
+import 'package:m5data_app/screens/auth/forgot_password_screen.dart';
 import 'package:m5data_app/screens/auth/register_screen.dart';
 import 'package:m5data_app/screens/auth/set_pin_screen.dart';
 import 'package:m5data_app/widgets/custom_input.dart';
@@ -49,7 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
         'token': token,
       });
 
-     if (user.hasPin == 0) {
+      if (user.hasPin == 0) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => SetPinScreen(user: user)),
@@ -109,6 +110,32 @@ class _LoginScreenState extends State<LoginScreen> {
                 obscureText: true,
                 controller: passwordController,
               ),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  // const Text(
+                  //   "Forgot Password",
+                  //   style: TextStyle(
+                  //       // color: Colors.indigo[900],
+                  //       fontWeight: FontWeight.bold),
+                  // ),
+                  GestureDetector(
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const ForgotPasswordScreen()),
+                    ),
+                    child: Text(
+                      "Forgot Password",
+                      style: TextStyle(
+                          color: Colors.indigo[900],
+                          fontWeight: FontWeight.bold),
+                    ),
+                  )
+                ],
+              ),
+
               const SizedBox(height: 20),
 
               ElevatedButton(
@@ -122,8 +149,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     ? CircularProgressIndicator(color: Colors.indigo[900])
                     : Text(
                         "Login",
-                        style: TextStyle(
-                            color: Colors.indigo[900], fontSize: 16),
+                        style:
+                            TextStyle(color: Colors.indigo[900], fontSize: 16),
                       ),
               ),
 
@@ -135,8 +162,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   GestureDetector(
                     onTap: () => Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (_) => RegisterScreen()),
+                      MaterialPageRoute(builder: (_) => RegisterScreen()),
                     ),
                     child: Text(
                       "Register",

@@ -9,7 +9,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:m5data_app/models/user.dart';
 
 class ApiService {
-  static const String baseUrl = "http://127.0.0.1:8000/api"; // change to your server if hosted
+  static const String baseUrl = "https://api.m5data.com.ng/api";
+  // static const String baseUrl = "http://127.0.0.1:8000/api";
 
   static Future<Map<String, dynamic>> registerUser({
     required String name,
@@ -63,35 +64,109 @@ class ApiService {
   }) async {
     final url = Uri.parse('$baseUrl/login');
 
-    final response = await http.post(
-      url,
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      },
-      body: jsonEncode({
-        "email": email,
-        "password": password,
-      }),
-    );
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+        },
+        body: jsonEncode({
+          "email": email,
+          "password": password,
+        }),
+      );
 
-    print("Response: ${response.body}");
+      print("Response: ${response.body}");
 
-    final data = jsonDecode(response.body);
+      final data = jsonDecode(response.body);
 
-    if (response.statusCode == 200 && data['status'] == true) {
-      await AuthHelper.saveToken(data['token']);
+      if (response.statusCode == 200 && data['status'] == true) {
+        await AuthHelper.saveToken(data['token']);
+        return {
+          "status": true,
+          "message": data['message'],
+          "user": data['user'],
+          "token": data['token'],
+        };
+      } else {
+        return {
+          "status": false,
+          "message": data['message'] ?? 'Login failed',
+        };
+      }
+    } catch (e) {
       return {
-        "status": true,
-        "message": data['message'],
-        "user": data['user'],
-        "token": data['token'],
+        'status': false,
+        'message': 'Error: ${e.toString()}',
       };
-    } else {
-      return {
-        "status": false,
-        "message": data['message'] ?? 'Login failed',
-      };
+    }
+  }
+
+  // Forgot password
+  static Future<Map<String, dynamic>> forgotPassword(String email) async {
+    final url = Uri.parse('$baseUrl/forgot-password');
+    try {
+      final res = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: jsonEncode({'email': email}),
+      );
+
+      final data = jsonDecode(res.body);
+      if (res.statusCode == 200) {
+        return {
+          'success': true,
+          'message': data['message'] ?? 'Check your email'
+        };
+      } else {
+        return {'success': false, 'message': data['message'] ?? 'Failed'};
+      }
+    } catch (e) {
+      return {'success': false, 'message': e.toString()};
+    }
+  }
+
+  // Reset password
+  static Future<Map<String, dynamic>> resetPassword({
+    required String email,
+    required String token,
+    required String password,
+    required String passwordConfirmation,
+  }) async {
+    final url = Uri.parse('$baseUrl/reset-password');
+    try {
+      final res = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: jsonEncode({
+          'email': email,
+          'token': token,
+          'password': password,
+          'password_confirmation': passwordConfirmation,
+        }),
+      );
+
+      final data = jsonDecode(res.body);
+      if (res.statusCode == 200) {
+        return {
+          'success': true,
+          'message': data['message'] ?? 'Password reset successful'
+        };
+      } else {
+        return {
+          'success': false,
+          'message': data['message'] ?? 'Failed to reset password'
+        };
+      }
+    } catch (e) {
+      return {'success': false, 'message': e.toString()};
     }
   }
 
